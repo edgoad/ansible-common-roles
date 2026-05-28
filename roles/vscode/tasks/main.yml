@@ -9,14 +9,14 @@
 
 
 - name: Check if VS Code Python extension is installed
-  become: false
+  become: true
   become_user: "{{ existing_user }}"
   shell: code --list-extensions 2>/dev/null | grep -i "ms-python.python" || true
   register: vscode_extension_check
   changed_when: false
 
-- name: Install VS Code extension(s) for devasc (as user)
-  become: false
+- name: Install VS Code extension(s) for current user (as user)
+  become: true
   become_user: "{{ existing_user }}"
   command: code --install-extension ms-python.python
   when: vscode_extension_check.stdout == ""
