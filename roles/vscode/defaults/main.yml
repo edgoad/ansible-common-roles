@@ -1,0 +1,13 @@
+---
+# Installation method: snap | apt
+vscode_install_method: snap
+
+# Update behavior: pinned | latest
+vscode_update_policy: pinned
+
+# Only used for apt + pinned
+vscode_apt_version: ""
+
+vscode_extensions: []
+vscode_users:
+  - "{{ ansible_user | default('student') }}"

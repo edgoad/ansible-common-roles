@@ -1,0 +1,49 @@
+---
+# Create desktop shortcuts
+- name: Ensure Desktop folder exists
+  file:
+    path: "{{ desktop_path }}"
+    state: directory
+    owner: devasc
+    group: devasc
+    mode: '0755'
+
+- name: Install .desktop files
+  copy:
+    dest: "{{ desktop_path }}/{{ item.name }}"
+    content: "{{ item.content }}"
+    owner: "{{ existing_user }}"
+    group: "{{ existing_user }}"
+    mode: "0755"
+  loop: "{{ shortcuts }}"
+
+- name: Make .desktop files executable (defensive)
+  file:
+    path: "{{ desktop_path }}/{{ item.name }}"
+    mode: "u+x,g+x,o+x"
+  loop: "{{ shortcuts }}"
+
+# IMPORTANT: Mark as trusted within the user's GNOME session
+- name: Check if shortcuts are already trusted via gio
+  become: true
+  become_user: "{{ existing_user }}"
+  environment:
+    DISPLAY: ":0"
+  shell: |
+    dbus-launch gio get "{{ desktop_path }}/{{ item.name }}" "metadata::trusted" 2>/dev/null || echo "not-set"
+  loop: "{{ shortcuts }}"
+  register: gio_trust_check
+  changed_when: false
+
+- name: Mark shortcuts as trusted via gio
+  become: true
+  become_user: "{{ existing_user }}"
+  environment:
+    # If this runs while the user is logged in to GNOME, DISPLAY is usually set.
+    # If not, you can set DISPLAY and bootstrap a session bus via dbus-launch.
+    DISPLAY: ":0"
+  shell: |
+    dbus-launch gio set "{{ desktop_path }}/{{ item[0].name }}" "metadata::trusted" true
+  loop: "{{ shortcuts | zip(gio_trust_check.results) | list }}"
+  when: "'true' not in item[1].stdout"
+  register: gio_trust

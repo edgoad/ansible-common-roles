@@ -1,0 +1,20 @@
+---
+- name: Install VS Code (pinned)
+  snap:
+    name: code
+    classic: yes
+    state: present
+    channel: latest/stable
+  when: vscode_update_policy == "pinned"
+
+- name: Disable Snap auto-refresh for VS Code
+  command: snap refresh --hold=forever code
+  when: vscode_update_policy == "pinned"
+
+- name: Install or update VS Code (latest)
+  snap:
+    name: code
+    classic: yes
+    state: latest
+  when: vscode_update_policy == "latest"
+

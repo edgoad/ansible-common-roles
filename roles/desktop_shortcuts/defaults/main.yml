@@ -1,0 +1,3 @@
+desktop_shortcuts: []
+desktop_shortcuts_users:
+  - "{{ ansible_user | default('student') }}"

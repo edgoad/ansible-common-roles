@@ -1,0 +1,47 @@
+- name: Install prerequisites
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gpg
+    state: present
+    update_cache: yes
+
+- name: Add Microsoft GPG key
+  ansible.builtin.get_url:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    dest: /etc/apt/keyrings/microsoft.asc
+    mode: '0644'
+
+- name: Add VS Code APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.asc] https://packages.microsoft.com/repos/code stable main"
+    filename: vscode
+    state: present
+
+# ---- Pinned version (reproducible labs) ----
+- name: Install pinned VS Code version
+  apt:
+    name: "code={{ vscode_apt_version }}"
+    state: present
+    update_cache: yes
+  when:
+    - vscode_update_policy == "pinned"
+    - vscode_apt_version | length > 0
+
+- name: Hold VS Code package
+  dpkg_selections:
+    name: code
+    selection: hold
+  when:
+    - vscode_update_policy == "pinned"
+    - vscode_apt_version | length > 0
+
+# ---- Latest version (always up to date) ----
+- name: Install or update VS Code (latest)
+  apt:
+    name: code
+    state: latest
+    update_cache: yes
+  when: vscode_update_policy == "latest"
