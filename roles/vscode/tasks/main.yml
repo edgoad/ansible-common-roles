@@ -48,7 +48,10 @@
     mode: '0644'
   when: vscode_block_ai == true
 
-- name: Remove keyring files
-  file:
-    path: "{{ user_home }}/.local/share/keyrings"
-    state: absent
+- name: Disable GNOME keyring password (blank)
+  become_user: "{{ user_name }}"
+  shell: |
+    rm -rf ~/.local/share/keyrings
+    mkdir -p ~/.local/share/keyrings
+    printf '\n' | gnome-keyring-daemon --unlock
+
