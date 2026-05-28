@@ -53,12 +53,14 @@
     dbus-launch gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type 'nothing'
   when: "'nothing' not in gnome_sleep_battery.stdout"
 
-- name: Update systemd logind.conf to ignore lid and idle
-  blockinfile:
+- name: Configure systemd-logind behavior
+  ini_file:
     path: /etc/systemd/logind.conf
-    block: |
-      [Login]
-      HandleLidSwitch=ignore
-      IdleAction=ignore
+    section: Login
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  loop:
+    - { option: HandleLidSwitch, value: ignore }
+    - { option: IdleAction, value: ignore }
   notify: Restart systemd-logind
 
