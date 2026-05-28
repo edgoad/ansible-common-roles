@@ -4,8 +4,8 @@
   file:
     path: "{{ desktop_path }}"
     state: directory
-    owner: devasc
-    group: devasc
+    owner: "{{ existing_user }}"
+    group: "{{ existing_user }}"
     mode: '0755'
 
 - name: Install .desktop files
