@@ -1,0 +1,16 @@
+
+# galaxy.yml
+namespace: edgoad
+name: common
+version: 1.0.0
+readme: README.md
+authors:
+  - Edrick Goad
+description: Common workstation and lab infrastructure roles
+license:
+  - Apache-2.0
+tags:
+  - linux
+  - workstation
+  - education
+repository: https://github.com/edgoad/ansible-common-roles
