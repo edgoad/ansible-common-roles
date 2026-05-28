@@ -3,6 +3,6 @@
   become: yes
   systemd:
     name: xrdp
-    state: restarted
+    state: reloaded
 - name: Reload systemd
   command: systemctl daemon-reload
