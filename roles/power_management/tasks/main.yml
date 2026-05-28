@@ -12,36 +12,45 @@
 
 # Setup to prevent screen from going to sleep
 - name: Check GNOME idle timeout setting
-  become: false
-  shell: sudo -u devasc dbus-launch gsettings get org.gnome.desktop.session idle-delay 2>/dev/null || echo "uint32 60000"
+  become: true
+  become_user: "{{ existing_user }}"
+  shell: dbus-launch gsettings get org.gnome.desktop.session idle-delay 2>/dev/null || echo "uint32 60000"
   register: gnome_idle_timeout
   changed_when: false
 
 - name: Disable GNOME idle timeout
+  become: true
+  become_user: "{{ existing_user }}"
   command: >
-    sudo -u devasc dbus-launch gsettings set org.gnome.desktop.session idle-delay 0
+    dbus-launch gsettings set org.gnome.desktop.session idle-delay 0
   when: "gnome_idle_timeout.stdout.strip() != 'uint32 0'"
 
 - name: Check GNOME power sleep on AC setting
-  become: false
-  shell: sudo -u devasc dbus-launch gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 2>/dev/null || echo "'nothing'"
+  become: true
+  become_user: "{{ existing_user }}"
+  shell: dbus-launch gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 2>/dev/null || echo "'nothing'"
   register: gnome_sleep_ac
   changed_when: false
 
 - name: Disable GNOME power sleep on AC
+  become: true
+  become_user: "{{ existing_user }}"
   command: >
-    sudo -u devasc dbus-launch gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
+    dbus-launch gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
   when: "'nothing' not in gnome_sleep_ac.stdout"
 
 - name: Check GNOME power sleep on battery setting
-  become: false
-  shell: sudo -u devasc dbus-launch gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type 2>/dev/null || echo "'nothing'"
+  become: true
+  become_user: "{{ existing_user }}"
+  shell: dbus-launch gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type 2>/dev/null || echo "'nothing'"
   register: gnome_sleep_battery
   changed_when: false
 
 - name: Disable GNOME power sleep on battery
+  become: true
+  become_user: "{{ existing_user }}"
   command: >
-    sudo -u devasc dbus-launch gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type 'nothing'
+    dbus-launch gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type 'nothing'
   when: "'nothing' not in gnome_sleep_battery.stdout"
 
 - name: Update systemd logind.conf to ignore lid and idle
