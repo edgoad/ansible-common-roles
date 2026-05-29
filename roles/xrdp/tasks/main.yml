@@ -122,7 +122,7 @@
     content: |
       [Allow Colord all Users]
       Identity=unix-user:*
-      Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile
+      Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile;org.freedesktop.color-manager.modify-device;org.freedesktop.color-manager.modify-profile
       ResultAny=no
       ResultInactive=no
       ResultActive=yes
@@ -174,13 +174,13 @@
   register: enhanced_vsock_setting
   changed_when: false
 
-- name: Reset use_vsock to false in xrdp.ini
+- name: Ensure use_vsock is enabled in xrdp.ini for enhanced mode
   become: yes
   replace:
     path: /etc/xrdp/xrdp.ini
-    regexp: 'use_vsock=true'
-    replace: 'use_vsock=false'
-  when: "enhanced_vsock_setting.stdout != 'use_vsock=false'"
+    regexp: 'use_vsock=false'
+    replace: 'use_vsock=true'
+  when: "enhanced_vsock_setting.stdout != 'use_vsock=true'"
   notify: Restart xrdp service
 
 

@@ -52,6 +52,15 @@
   become_user: "{{ existing_user }}"
   shell: |
     rm -rf ~/.local/share/keyrings
-    mkdir -p ~/.local/share/keyrings
-    printf '\n' | gnome-keyring-daemon --unlock
+#     mkdir -p ~/.local/share/keyrings
+#     printf '\n' | gnome-keyring-daemon --unlock
 
+# - name: Configure VS Code to use basic password storage
+#   lineinfile:
+#     path: "/home/{{ existing_user }}/.config/Code/User/argv.json"
+#     regexp: '"password-store":'
+#     line: '    "password-store": "basic",'
+#     insertafter: '\{'
+#     create: yes
+#     owner: "{{ existing_user }}"
+#     group: "{{ existing_user }}"

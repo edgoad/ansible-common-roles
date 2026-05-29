@@ -1,0 +1,18 @@
+---
+- name: Set GRUB timeout to 3 seconds
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_TIMEOUT='
+    line: 'GRUB_TIMEOUT=3'
+  become: true
+
+- name: (Optional) Ensure GRUB timeout style is menu
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_TIMEOUT_STYLE='
+    line: 'GRUB_TIMEOUT_STYLE=menu'
+  become: true
+
+- name: Update GRUB configuration
+  command: update-grub
+  become: true
