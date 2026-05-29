@@ -49,7 +49,7 @@
   when: vscode_block_ai == true
 
 - name: Disable GNOME keyring password (blank)
-  become_user: "{{ user_name }}"
+  become_user: "{{ existing_user }}"
   shell: |
     rm -rf ~/.local/share/keyrings
     mkdir -p ~/.local/share/keyrings
