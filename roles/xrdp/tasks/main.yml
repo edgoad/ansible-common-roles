@@ -2,10 +2,7 @@
 - name: Install kernel and XRDP tools
   become: yes
   apt:
-    name:
-      - xrdp
-      - linux-tools-virtual
-      - linux-cloud-tools-virtual
+    name: "{{ ['xrdp', 'linux-tools-virtual', 'linux-cloud-tools-virtual'] + (['xfce', 'xfce4', 'xfce4-goodies'] if favorite_desktop_env == 'xfce' else []) }}"
     state: latest
     cache_valid_time: 3600
     update_cache: yes
@@ -72,6 +69,17 @@
       export GNOME_SHELL_SESSION_MODE=ubuntu
       export XDG_CURRENT_DESKTOP=ubuntu:GNOME
       exec /etc/xrdp/startwm.sh
+  when: favorite_desktop_env | default('gnome') == 'gnome'
+
+- name: Create XFCE .xsession
+  become: yes
+  copy:
+    dest: "{{ ansible_env.HOME }}/.xsession"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+    content: |
+      xfce-session
+  when: favorite_desktop_env == 'xfce'
 
 - name: Replace startwm with startubuntu in sesman.ini
   become: yes
@@ -79,6 +87,7 @@
     path: /etc/xrdp/sesman.ini
     regexp: 'startwm'
     replace: 'startubuntu'
+  when: favorite_desktop_env | default('gnome') == 'gnome'
 
 - name: Rename redirected drives in sesman.ini
   become: yes
