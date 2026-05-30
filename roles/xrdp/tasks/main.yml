@@ -2,7 +2,7 @@
 - name: Install kernel and XRDP tools
   become: yes
   apt:
-    name: "{{ ['xrdp', 'linux-tools-virtual', 'linux-cloud-tools-virtual'] + (['xfce4', 'xfce4-goodies'] if favorite_desktop_env == 'xfce' else []) }}"
+    name: "{{ ['xrdp', 'linux-tools-virtual', 'linux-cloud-tools-virtual'] + (['xfce4', 'xfce4-goodies'] if favorite_desktop_env == 'xfce' else []) + (['ubuntu-mate-desktop'] if favorite_desktop_env == 'mate' else []) }}"
     state: latest
     cache_valid_time: 3600
     update_cache: yes
@@ -80,6 +80,16 @@
     content: |
       xfce-session
   when: favorite_desktop_env == 'xfce'
+
+- name: Create MATE .xsession
+  become: yes
+  copy:
+    dest: "{{ ansible_env.HOME }}/.xsession"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+    content: |
+      mate-session
+  when: favorite_desktop_env == 'mate'
 
 - name: Replace startwm with startubuntu in sesman.ini
   become: yes
