@@ -2,7 +2,7 @@
 - name: Install kernel and XRDP tools
   become: yes
   apt:
-    name: "{{ ['xrdp', 'linux-tools-virtual', 'linux-cloud-tools-virtual'] + (['xfce', 'xfce4', 'xfce4-goodies'] if favorite_desktop_env == 'xfce' else []) }}"
+    name: "{{ ['xrdp', 'linux-tools-virtual', 'linux-cloud-tools-virtual'] + (['xfce4', 'xfce4-goodies'] if favorite_desktop_env == 'xfce' else []) }}"
     state: latest
     cache_valid_time: 3600
     update_cache: yes
